@@ -6,6 +6,12 @@ use std::fmt;
 #[serde(rename_all = "PascalCase")]
 pub struct Parameter {
     pub allowed_values: Option<Vec<String>>,
+    pub allowed_pattern: Option<String>,
+    pub constraint_description: Option<String>,
+    pub min_length: Option<String>,
+    pub max_length: Option<String>,
+    pub min_value: Option<String>,
+    pub max_value: Option<String>,
     pub default: Option<String>,
     pub description: Option<String>,
     #[serde(rename = "Type")]

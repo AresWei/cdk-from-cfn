@@ -959,3 +959,56 @@ fn test_condition_ir_split_emits_a_string_literal() {
     );
     assert_eq!(rendered(output), r#""a-b".Split('-')"#);
 }
+
+const PARAMETER_CONSTRAINTS_TEMPLATE: &str = r#"{
+    "Parameters": {
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": "my-key",
+            "AllowedValues": ["it's", "other"],
+            "AllowedPattern": "^[\\w'\"-]+$",
+            "ConstraintDescription": "don't use \"quotes\"",
+            "MinLength": "1",
+            "MaxLength": "255"
+        },
+        "Port": {
+            "Type": "Number",
+            "NoEcho": "true",
+            "Default": "5432",
+            "MinValue": "01024",
+            "MaxValue": "4294967294"
+        }
+    },
+    "Resources": {
+        "Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "KeyName": { "Ref": "KeyName" }
+            }
+        }
+    }
+}"#;
+
+#[test]
+fn test_cfn_parameter_keeps_constraints() {
+    let cfn: CloudformationParseTree =
+        serde_json::from_str(PARAMETER_CONSTRAINTS_TEMPLATE).unwrap();
+    let ir = CloudformationProgramIr::from(cfn, Schema::builtin()).unwrap();
+
+    let mut output = Vec::new();
+    ir.synthesize("csharp", &mut output, "TestStack", ClassType::Stack)
+        .unwrap();
+    let code = String::from_utf8(output).unwrap();
+
+    for expected in [
+        "AllowedValues = new [] { \"it's\", \"other\" },",
+        "AllowedPattern = \"^[\\\\w'\\\"-]+$\",",
+        "ConstraintDescription = \"don't use \\\"quotes\\\"\",",
+        "MinLength = 1,",
+        "MaxLength = 255,",
+        "MinValue = 1024,",
+        "MaxValue = 4294967294,",
+    ] {
+        assert!(code.contains(expected), "missing {expected:?} in:\n{code}");
+    }
+}

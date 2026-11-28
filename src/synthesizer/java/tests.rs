@@ -1024,3 +1024,56 @@ fn test_resource_deletion_policy_snapshot() {
     assert!(code.contains("volume.getCfnOptions().setDeletionPolicy(CfnDeletionPolicy.SNAPSHOT)"));
     assert!(!code.contains("applyRemovalPolicy"));
 }
+
+const PARAMETER_CONSTRAINTS_TEMPLATE: &str = r#"{
+    "Parameters": {
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": "my-key",
+            "AllowedValues": ["it's", "other"],
+            "AllowedPattern": "^[\\w'\"-]+$",
+            "ConstraintDescription": "don't use \"quotes\"",
+            "MinLength": "1",
+            "MaxLength": "255"
+        },
+        "Port": {
+            "Type": "Number",
+            "NoEcho": "true",
+            "Default": "5432",
+            "MinValue": "01024",
+            "MaxValue": "4294967294"
+        }
+    },
+    "Resources": {
+        "Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "KeyName": { "Ref": "KeyName" }
+            }
+        }
+    }
+}"#;
+
+#[test]
+fn test_cfn_parameter_keeps_constraints() {
+    let cfn: CloudformationParseTree =
+        serde_json::from_str(PARAMETER_CONSTRAINTS_TEMPLATE).unwrap();
+    let ir = CloudformationProgramIr::from(cfn, Schema::builtin()).unwrap();
+
+    let mut output = Vec::new();
+    ir.synthesize("java", &mut output, "TestStack", ClassType::Stack)
+        .unwrap();
+    let code = String::from_utf8(output).unwrap();
+
+    for expected in [
+        ".allowedValues(Arrays.asList(\"it\'s\", \"other\"))",
+        ".allowedPattern(\"^[\\\\w\'\\\"-]+$\")",
+        ".constraintDescription(\"don\'t use \\\"quotes\\\"\")",
+        ".minLength(1)",
+        ".maxLength(255)",
+        ".minValue(1024)",
+        ".maxValue(4294967294D)",
+    ] {
+        assert!(code.contains(expected), "missing {expected:?} in:\n{code}");
+    }
+}

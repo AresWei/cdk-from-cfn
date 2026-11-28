@@ -60,10 +60,6 @@ Value mismatch at Outputs.SnsTopicArn.Export.Name:
       "Type": "String"
     }
 
-- Missing key: Parameters.SSHKeyName.ConstraintDescription
-  Expected:
-    "must be the name of an existing EC2 KeyPair."
-
 - Missing key: Parameters.SatelliteName
   Expected:
     {

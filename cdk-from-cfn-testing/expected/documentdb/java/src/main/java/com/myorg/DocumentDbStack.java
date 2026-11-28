@@ -62,6 +62,10 @@ class DocumentDbStack extends Stack {
                         .type("String")
                         .defaultValue("MainUser")
                         .description("The database admin account username")
+                        .allowedPattern("[a-zA-Z][a-zA-Z0-9]*")
+                        .constraintDescription("Must begin with a letter and contain only alphanumeric characters.")
+                        .minLength(1)
+                        .maxLength(16)
                         .noEcho(true)
                         .build()
                         .getValueAsString();
@@ -72,6 +76,10 @@ class DocumentDbStack extends Stack {
                         .type("String")
                         .defaultValue("password")
                         .description("The database admin account password")
+                        .allowedPattern("[a-zA-Z0-9]+")
+                        .constraintDescription("must contain only alphanumeric characters.")
+                        .minLength(1)
+                        .maxLength(41)
                         .noEcho(true)
                         .build()
                         .getValueAsString();

@@ -153,6 +153,29 @@ impl Synthesizer for Python {
                     if let Some(v) = &param.description {
                         cfn_param.line(format!("description = '{v}',"));
                     };
+                    if let Some(values) = &param.allowed_values {
+                        let values: Vec<String> = values
+                            .iter()
+                            .map(|v| format!("'{}'", v.escape_debug()))
+                            .collect();
+                        cfn_param.line(format!("allowed_values = [{}],", values.join(", ")));
+                    }
+                    if let Some(v) = &param.allowed_pattern {
+                        cfn_param.line(format!("allowed_pattern = '{}',", v.escape_debug()));
+                    }
+                    if let Some(v) = &param.constraint_description {
+                        cfn_param.line(format!("constraint_description = '{}',", v.escape_debug()));
+                    }
+                    for (key, value) in [
+                        ("min_length", &param.min_length),
+                        ("max_length", &param.max_length),
+                        ("min_value", &param.min_value),
+                        ("max_value", &param.max_value),
+                    ] {
+                        if let Some(n) = value.as_deref().and_then(super::constraint_number) {
+                            cfn_param.line(format!("{key} = {n},"));
+                        }
+                    }
                     if let Some(v) = &param.no_echo {
                         cfn_param.line(format!("no_echo = {},", v._pascal_case()));
                     };

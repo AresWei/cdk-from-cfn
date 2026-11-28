@@ -135,6 +135,13 @@ impl<'a> Java<'a> {
                     input.constructor_type.clone()
                 },
                 default_value: input.default_value.clone(),
+                allowed_values: input.allowed_values.clone(),
+                allowed_pattern: input.allowed_pattern.clone(),
+                constraint_description: input.constraint_description.clone(),
+                min_length: input.min_length.clone(),
+                max_length: input.max_length.clone(),
+                min_value: input.min_value.clone(),
+                max_value: input.max_value.clone(),
                 no_echo: input.no_echo.clone(),
             });
         }
@@ -303,6 +310,42 @@ impl<'a> Java<'a> {
                     prop_details.line(format!(".defaultValue(\"{v}\")"));
                     if let Some(v) = &prop.description {
                         prop_details.line(format!(".description(\"{}\")", escape_java_string(v)));
+                    }
+                    if let Some(values) = &prop.allowed_values {
+                        let values: Vec<String> = values
+                            .iter()
+                            .map(|v| format!("\"{}\"", escape_java_string(v)))
+                            .collect();
+                        prop_details.line(format!(
+                            ".allowedValues(Arrays.asList({}))",
+                            values.join(", ")
+                        ));
+                    }
+                    if let Some(v) = &prop.allowed_pattern {
+                        prop_details
+                            .line(format!(".allowedPattern(\"{}\")", escape_java_string(v)));
+                    }
+                    if let Some(v) = &prop.constraint_description {
+                        prop_details.line(format!(
+                            ".constraintDescription(\"{}\")",
+                            escape_java_string(v)
+                        ));
+                    }
+                    for (key, value) in [
+                        ("minLength", &prop.min_length),
+                        ("maxLength", &prop.max_length),
+                        ("minValue", &prop.min_value),
+                        ("maxValue", &prop.max_value),
+                    ] {
+                        if let Some(n) = value.as_deref().and_then(super::constraint_number) {
+                            // Whole numbers outside the int range need a suffix to compile
+                            let suffix = if n.fract() == 0.0 && n.abs() > f64::from(i32::MAX) {
+                                "D"
+                            } else {
+                                ""
+                            };
+                            prop_details.line(format!(".{key}({n}{suffix})"));
+                        }
                     }
                     if let Some(v) = &prop.no_echo {
                         prop_details.line(format!(".noEcho({v})"))
@@ -1242,6 +1285,13 @@ pub struct JavaConstructorParameter {
     pub constructor_type: String,
     pub java_type: String,
     pub default_value: Option<String>,
+    pub allowed_values: Option<Vec<String>>,
+    pub allowed_pattern: Option<String>,
+    pub constraint_description: Option<String>,
+    pub min_length: Option<String>,
+    pub max_length: Option<String>,
+    pub min_value: Option<String>,
+    pub max_value: Option<String>,
     pub no_echo: Option<String>,
 }
 

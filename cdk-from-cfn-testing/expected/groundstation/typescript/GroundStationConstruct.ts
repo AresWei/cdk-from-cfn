@@ -72,6 +72,7 @@ export class GroundStationConstruct extends Construct {
         type: 'AWS::EC2::KeyPair::KeyName',
         default: props.sshKeyName?.toString() ?? '',
         description: 'Name of the ssh key used to access ec2 hosts. Set this up ahead of time.',
+        constraintDescription: 'must be the name of an existing EC2 KeyPair.',
       }).valueAsString,
       vpcId: new cdk.CfnParameter(this, 'VpcId', {
         type: 'AWS::EC2::VPC::Id',

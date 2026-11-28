@@ -16,3 +16,16 @@ fn test_parameter_type_display() {
         "CustomType"
     );
 }
+
+#[test]
+fn test_parameter_constraints_accept_numbers() {
+    let param: Parameter = serde_yaml::from_str(
+        r#"{ "Type": "Number", "MinValue": 1024, "MaxValue": 65535.5, "MinLength": 1, "MaxLength": "255" }"#,
+    )
+    .unwrap();
+
+    assert_eq!(param.min_value.as_deref(), Some("1024"));
+    assert_eq!(param.max_value.as_deref(), Some("65535.5"));
+    assert_eq!(param.min_length.as_deref(), Some("1"));
+    assert_eq!(param.max_length.as_deref(), Some("255"));
+}

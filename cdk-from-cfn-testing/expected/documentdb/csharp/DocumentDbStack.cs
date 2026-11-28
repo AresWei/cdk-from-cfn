@@ -58,6 +58,10 @@ namespace DocumentDbStack
                 Type = "String",
                 Default = props.MasterUser ?? "MainUser",
                 Description = "The database admin account username",
+                AllowedPattern = "[a-zA-Z][a-zA-Z0-9]*",
+                ConstraintDescription = "Must begin with a letter and contain only alphanumeric characters.",
+                MinLength = 1,
+                MaxLength = 16,
                 NoEcho = true,
             }).ValueAsString;
             props.MasterPassword = new CfnParameter(this, "MasterPassword", new CfnParameterProps
@@ -65,6 +69,10 @@ namespace DocumentDbStack
                 Type = "String",
                 Default = props.MasterPassword ?? "password",
                 Description = "The database admin account password",
+                AllowedPattern = "[a-zA-Z0-9]+",
+                ConstraintDescription = "must contain only alphanumeric characters.",
+                MinLength = 1,
+                MaxLength = 41,
                 NoEcho = true,
             }).ValueAsString;
             props.DbInstanceClass ??= "db.t3.medium";

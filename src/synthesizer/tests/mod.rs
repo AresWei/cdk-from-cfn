@@ -12,3 +12,11 @@ mod test;
 use class::IrClass;
 
 generate_ir_tests!();
+
+#[test]
+fn test_constraint_number() {
+    assert_eq!(super::constraint_number("010"), Some(10.0));
+    assert_eq!(super::constraint_number("65535.5"), Some(65535.5));
+    assert_eq!(super::constraint_number("abc"), None);
+    assert_eq!(super::constraint_number("inf"), None);
+}

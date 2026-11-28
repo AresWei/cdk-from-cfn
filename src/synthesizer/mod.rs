@@ -27,6 +27,13 @@ impl FromStr for ClassType {
     }
 }
 
+/// Parses a numeric parameter constraint (`MinLength`, `MaxValue`, ...), so it is written as a number literal
+/// (`010` as `10`, `1.0` as `1`) rather than as the template's text. Values that are not finite numbers are dropped,
+/// since CloudFormation rejects them anyway.
+fn constraint_number(value: &str) -> Option<f64> {
+    value.trim().parse::<f64>().ok().filter(|n| n.is_finite())
+}
+
 #[cfg(feature = "csharp")]
 mod csharp;
 #[cfg(feature = "csharp")]

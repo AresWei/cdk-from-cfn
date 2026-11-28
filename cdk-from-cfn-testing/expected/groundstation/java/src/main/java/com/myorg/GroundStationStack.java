@@ -59,6 +59,7 @@ class GroundStationStack extends Stack {
                         .type("AWS::EC2::KeyPair::KeyName")
                         .defaultValue("")
                         .description("Name of the ssh key used to access ec2 hosts. Set this up ahead of time.")
+                        .constraintDescription("must be the name of an existing EC2 KeyPair.")
                         .build()
                         .getValueAsString();
 

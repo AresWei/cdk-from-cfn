@@ -846,3 +846,56 @@ fn test_boolean_outputs_are_lowercase_strings() {
         "got:\n{code}"
     );
 }
+
+const PARAMETER_CONSTRAINTS_TEMPLATE: &str = r#"{
+    "Parameters": {
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": "my-key",
+            "AllowedValues": ["it's", "other"],
+            "AllowedPattern": "^[\\w'\"-]+$",
+            "ConstraintDescription": "don't use \"quotes\"",
+            "MinLength": "1",
+            "MaxLength": "255"
+        },
+        "Port": {
+            "Type": "Number",
+            "NoEcho": "true",
+            "Default": "5432",
+            "MinValue": "01024",
+            "MaxValue": "4294967294"
+        }
+    },
+    "Resources": {
+        "Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "KeyName": { "Ref": "KeyName" }
+            }
+        }
+    }
+}"#;
+
+#[test]
+fn test_cfn_parameter_keeps_constraints() {
+    let cfn: CloudformationParseTree =
+        serde_json::from_str(PARAMETER_CONSTRAINTS_TEMPLATE).unwrap();
+    let ir = CloudformationProgramIr::from(cfn, Schema::builtin()).unwrap();
+
+    let mut output = Vec::new();
+    ir.synthesize("python", &mut output, "TestStack", ClassType::Stack)
+        .unwrap();
+    let code = String::from_utf8(output).unwrap();
+
+    for expected in [
+        "allowed_values = ['it\\'s', 'other'],",
+        "allowed_pattern = '^[\\\\w\\'\\\"-]+$',",
+        "constraint_description = 'don\\'t use \\\"quotes\\\"',",
+        "min_length = 1,",
+        "max_length = 255,",
+        "min_value = 1024,",
+        "max_value = 4294967294,",
+    ] {
+        assert!(code.contains(expected), "missing {expected:?} in:\n{code}");
+    }
+}

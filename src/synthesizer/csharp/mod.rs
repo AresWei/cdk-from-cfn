@@ -218,6 +218,36 @@ impl Synthesizer for CSharp<'_> {
                     if let Some(v) = &param.description {
                         cfn_param.line(format!("Description = \"{}\",", escape_csharp_string(v)));
                     };
+                    if let Some(values) = &param.allowed_values {
+                        let values: Vec<String> = values
+                            .iter()
+                            .map(|v| format!("\"{}\"", escape_csharp_string(v)))
+                            .collect();
+                        cfn_param.line(format!(
+                            "AllowedValues = new [] {{ {} }},",
+                            values.join(", ")
+                        ));
+                    }
+                    if let Some(v) = &param.allowed_pattern {
+                        cfn_param
+                            .line(format!("AllowedPattern = \"{}\",", escape_csharp_string(v)));
+                    }
+                    if let Some(v) = &param.constraint_description {
+                        cfn_param.line(format!(
+                            "ConstraintDescription = \"{}\",",
+                            escape_csharp_string(v)
+                        ));
+                    }
+                    for (key, value) in [
+                        ("MinLength", &param.min_length),
+                        ("MaxLength", &param.max_length),
+                        ("MinValue", &param.min_value),
+                        ("MaxValue", &param.max_value),
+                    ] {
+                        if let Some(n) = value.as_deref().and_then(super::constraint_number) {
+                            cfn_param.line(format!("{key} = {n},"));
+                        }
+                    }
                     if let Some(v) = &param.no_echo {
                         cfn_param.line(format!("NoEcho = {v},"));
                     }

@@ -43,6 +43,12 @@ impl Constructor {
                     },
                     default_value: param.default,
                     allowed_values: param.allowed_values,
+                    allowed_pattern: param.allowed_pattern,
+                    constraint_description: param.constraint_description,
+                    min_length: param.min_length,
+                    max_length: param.max_length,
+                    min_value: param.min_value,
+                    max_value: param.max_value,
                     no_echo: param.no_echo,
                 })
                 .collect(),
@@ -58,6 +64,12 @@ pub struct ConstructorParameter {
     pub constructor_type: String,
     pub default_value: Option<String>,
     pub allowed_values: Option<Vec<String>>,
+    pub allowed_pattern: Option<String>,
+    pub constraint_description: Option<String>,
+    pub min_length: Option<String>,
+    pub max_length: Option<String>,
+    pub min_value: Option<String>,
+    pub max_value: Option<String>,
     pub no_echo: Option<String>,
 }
 

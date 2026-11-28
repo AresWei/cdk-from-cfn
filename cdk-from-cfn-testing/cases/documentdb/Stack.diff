@@ -59,21 +59,17 @@ Value mismatch at Outputs.ClusterPort.Value.Fn::GetAtt:
       "Type": "String"
     }
 
-- Missing key: Parameters.MasterPassword.AllowedPattern
-  Expected:
-    "[a-zA-Z0-9]+"
-
-- Missing key: Parameters.MasterPassword.ConstraintDescription
-  Expected:
-    "must contain only alphanumeric characters."
-
-- Missing key: Parameters.MasterPassword.MaxLength
+Value mismatch at Parameters.MasterPassword.MaxLength:
   Expected:
     "41"
+  Actual:
+    41
 
-- Missing key: Parameters.MasterPassword.MinLength
+Value mismatch at Parameters.MasterPassword.MinLength:
   Expected:
     "1"
+  Actual:
+    1
 
 Value mismatch at Parameters.MasterPassword.NoEcho:
   Expected:
@@ -81,21 +77,17 @@ Value mismatch at Parameters.MasterPassword.NoEcho:
   Actual:
     true
 
-- Missing key: Parameters.MasterUser.AllowedPattern
-  Expected:
-    "[a-zA-Z][a-zA-Z0-9]*"
-
-- Missing key: Parameters.MasterUser.ConstraintDescription
-  Expected:
-    "Must begin with a letter and contain only alphanumeric characters."
-
-- Missing key: Parameters.MasterUser.MaxLength
+Value mismatch at Parameters.MasterUser.MaxLength:
   Expected:
     "16"
+  Actual:
+    16
 
-- Missing key: Parameters.MasterUser.MinLength
+Value mismatch at Parameters.MasterUser.MinLength:
   Expected:
     "1"
+  Actual:
+    1
 
 Value mismatch at Parameters.MasterUser.NoEcho:
   Expected:

@@ -12,6 +12,12 @@ fn test_constructor_from() {
         "param1".to_string(),
         Parameter {
             allowed_values: None,
+            allowed_pattern: None,
+            constraint_description: None,
+            min_length: None,
+            max_length: None,
+            min_value: None,
+            max_value: None,
             default: Some("default1".to_string()),
             description: Some("description1".to_string()),
             parameter_type: ParameterType::String,
@@ -22,6 +28,12 @@ fn test_constructor_from() {
         "param2".to_string(),
         Parameter {
             allowed_values: None,
+            allowed_pattern: None,
+            constraint_description: None,
+            min_length: None,
+            max_length: None,
+            min_value: None,
+            max_value: None,
             default: None,
             description: Some("description2".to_string()),
             parameter_type: ParameterType::Number,
@@ -66,6 +78,12 @@ fn test_constructor_parameter() {
         constructor_type: "String".to_string(),
         default_value: Some("default1".to_string()),
         allowed_values: Some(vec!["true".to_string(), "false".to_string()]),
+        allowed_pattern: None,
+        constraint_description: None,
+        min_length: None,
+        max_length: None,
+        min_value: None,
+        max_value: None,
         no_echo: None,
     };
 

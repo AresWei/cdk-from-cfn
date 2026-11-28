@@ -27,6 +27,7 @@ class GroundStationConstruct(Construct):
         type = 'AWS::EC2::KeyPair::KeyName',
         default = str(kwargs.get('sshKeyName', '')),
         description = 'Name of the ssh key used to access ec2 hosts. Set this up ahead of time.',
+        constraint_description = 'must be the name of an existing EC2 KeyPair.',
       ).value_as_string,
       'vpcId': cdk.CfnParameter(self, 'VpcId', 
         type = 'AWS::EC2::VPC::Id',

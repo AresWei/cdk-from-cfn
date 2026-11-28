@@ -76,6 +76,7 @@ namespace GroundStationConstruct
                 Type = "AWS::EC2::KeyPair::KeyName",
                 Default = props.SshKeyName ?? "",
                 Description = "Name of the ssh key used to access ec2 hosts. Set this up ahead of time.",
+                ConstraintDescription = "must be the name of an existing EC2 KeyPair.",
             }).ValueAsString;
             props.VpcId = new CfnParameter(this, "VpcId", new CfnParameterProps
             {

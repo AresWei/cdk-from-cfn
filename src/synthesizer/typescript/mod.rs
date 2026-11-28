@@ -240,6 +240,29 @@ impl Synthesizer for Typescript {
                     if let Some(v) = &param.description {
                         cfn_param.line(format!("description: '{v}',"));
                     };
+                    if let Some(values) = &param.allowed_values {
+                        let values: Vec<String> = values
+                            .iter()
+                            .map(|v| format!("'{}'", v.escape_debug()))
+                            .collect();
+                        cfn_param.line(format!("allowedValues: [{}],", values.join(", ")));
+                    }
+                    if let Some(v) = &param.allowed_pattern {
+                        cfn_param.line(format!("allowedPattern: '{}',", v.escape_debug()));
+                    }
+                    if let Some(v) = &param.constraint_description {
+                        cfn_param.line(format!("constraintDescription: '{}',", v.escape_debug()));
+                    }
+                    for (key, value) in [
+                        ("minLength", &param.min_length),
+                        ("maxLength", &param.max_length),
+                        ("minValue", &param.min_value),
+                        ("maxValue", &param.max_value),
+                    ] {
+                        if let Some(n) = value.as_deref().and_then(super::constraint_number) {
+                            cfn_param.line(format!("{key}: {n},"));
+                        }
+                    }
                     if let Some(v) = &param.no_echo {
                         cfn_param.line(format!("noEcho: {v},"));
                     }
